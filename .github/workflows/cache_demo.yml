@@ -1,0 +1,31 @@
+name: Cache Demo Workflow
+
+on:
+  push:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Cache dependencies
+        id: cache-e58d60a
+        uses: actions/cache@v4
+        with:
+          path: ~/cached-data
+          key: cache-e58d60a
+          
+      - name: prime-cache-e58d60a
+        run: |
+          echo "Cache hit result: ${{ steps.cache-e58d60a.outputs.cache-hit }}"
+          if [ "${{ steps.cache-e58d60a.outputs.cache-hit }}" != "true" ]; then
+            echo "Cache miss - creating cached data"
+            mkdir -p ~/cached-data
+            echo "This is cached content" > ~/cached-data/data.txt
+          else
+            echo "Cache hit - using existing cache"
+          fi
